@@ -10,20 +10,32 @@ app.get('/', (req, res) => {
 })
 
 app.get('/hot', (req, res) => {
-    getData()
+    res.json(getData())
 })
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
 
-async function getData() {
+ function getData() {
     const urlNettruyen = "http://www.nettruyenme.com/"
     const data = []
-    await axios.get(urlNettruyen).then((response) => {
+     axios.get(urlNettruyen).then((response) => {
         const htmlRaw = response.data
         const $ = cheerio.load(htmlRaw)
 
-        console.log(htmlRaw)
+        const selectList = "figure > div > a > img"
+
+        $(selectList).each((index, element) => {
+            const img = "http:" + $(element).attr("data-original")
+            const title = $(element).attr("alt")
+            data.push({
+                title,
+                img
+            })
+        })
+
+        console.log(data)
+        return data
     })
 }
